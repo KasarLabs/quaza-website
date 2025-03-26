@@ -1,0 +1,173 @@
+.main {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Permet le défilement vertical */
+  max-height: 100vh; /* Limite la hauteur à la hauteur de la fenêtre */
+  background-color: #000;
+  color: #fff;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.dashboard {
+  flex: 1;
+  width: 100%;
+  padding: 2rem;
+  overflow-y: auto; /* Permet le défilement dans le dashboard */
+}
+
+.title {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #aaa;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.metricsContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.metricCard {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.metricCard h2 {
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.metricValue {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.metricSubtext {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.agentGrid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr); /* 10x10 pour 100 agents */
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.agentDot {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  position: relative;
+  background: linear-gradient(145deg, #ffffff, #333333);
+  opacity: 0.7;
+}
+
+.agentDot:hover {
+  transform: scale(1.5);
+  z-index: 10;
+  opacity: 1;
+}
+
+.active {
+  filter: brightness(1.2);
+}
+
+.inactive {
+  filter: brightness(0.7);
+}
+
+.pending {
+  filter: brightness(0.9);
+}
+
+.agentTooltip {
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  width: 250px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
+  pointer-events: none;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.agentDot:hover .agentTooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltipHeader {
+  font-weight: bold;
+  font-size: 1rem;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: #3a7bd5;
+}
+
+.tooltipContent {
+  font-size: 0.8rem;
+}
+
+.tooltipContent p {
+  margin: 4px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tooltipContent span {
+  color: #aaa;
+  margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .metricsContainer {
+    flex-direction: column;
+  }
+
+  .agentGrid {
+    grid-template-columns: repeat(10, 1fr);
+    gap: 4px;
+  }
+}
