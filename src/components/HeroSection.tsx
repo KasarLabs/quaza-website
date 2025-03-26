@@ -12,6 +12,7 @@ import * as TWEEN from "@tweenjs/tween.js";
 const HeroSection = () => {
   const containerRef = useRef(null);
   const [mounted, setMounted] = useState(false);
+  const helixGroupRef = useRef(null);
 
   useEffect(() => {
     setMounted(true);
@@ -20,6 +21,10 @@ const HeroSection = () => {
       let camera, scene, renderer, controls;
       const objects = [];
       const targets = { table: [], sphere: [], helix: [], grid: [] };
+
+      // Créer un groupe pour l'hélice que nous pourrons faire tourner
+      const helixGroup = new THREE.Group();
+      helixGroupRef.current = helixGroup;
 
       // Liste complète des éléments du tableau périodique
       const table = [
@@ -378,6 +383,11 @@ const HeroSection = () => {
         "174.9668",
         18,
         9,
+        "Hf",
+        "Hafnium",
+        "178.49",
+        4,
+        6,
       ];
 
       function init() {
@@ -390,6 +400,9 @@ const HeroSection = () => {
         camera.position.z = 3000;
 
         scene = new THREE.Scene();
+
+        // Ajouter le groupe de l'hélice à la scène
+        scene.add(helixGroup);
 
         // Créer les éléments
         for (let i = 0; i < table.length; i += 5) {
@@ -444,7 +457,7 @@ const HeroSection = () => {
           targets.sphere.push(objSphere);
         }
 
-        // Disposition en hélice
+        // Disposition en hélice inclinée
         for (let i = 0, l = objects.length; i < l; i++) {
           const phi = i * 0.175 + Math.PI;
 
@@ -496,6 +509,9 @@ const HeroSection = () => {
 
       // Fonction spécifique pour transformer vers l'hélice (pour éviter les problèmes avec TWEEN)
       function transformToHelix() {
+        // Incliner le groupe de l'hélice vers l'avant (axe X)
+        helixGroup.rotation.x = Math.PI * 0.1; // Incliner de ~36 degrés
+
         for (let i = 0; i < objects.length; i++) {
           const object = objects[i];
           const target = targets.helix[i];
@@ -543,6 +559,23 @@ const HeroSection = () => {
             object.rotation.z =
               startRot.z + (target.rotation.z - startRot.z) * easing;
 
+            // Une fois que l'animation est terminée, déplacer l'objet dans le groupe de l'hélice
+            if (progress === 1 && currentView === "helix") {
+              // Stocker la position et rotation mondiales
+              const worldPosition = new THREE.Vector3();
+              const worldQuaternion = new THREE.Quaternion();
+              object.getWorldPosition(worldPosition);
+              object.getWorldQuaternion(worldQuaternion);
+
+              // Retirer de la scène et ajouter au groupe
+              scene.remove(object);
+              helixGroup.add(object);
+
+              // Restaurer la position et rotation mondiales
+              object.position.copy(worldPosition);
+              object.quaternion.copy(worldQuaternion);
+            }
+
             // Rendre la scène
             render();
 
@@ -557,7 +590,31 @@ const HeroSection = () => {
         }
       }
 
-      function transform(targets, duration) {
+      // Variable pour suivre la vue actuelle
+      let currentView = "helix";
+
+      function transform(targets, duration, view) {
+        currentView = view;
+
+        // Si nous passons à une vue autre que l'hélice, remettre les objets dans la scène principale
+        if (view !== "helix") {
+          helixGroup.children.slice().forEach((child) => {
+            // Stocker la position et rotation mondiales
+            const worldPosition = new THREE.Vector3();
+            const worldQuaternion = new THREE.Quaternion();
+            child.getWorldPosition(worldPosition);
+            child.getWorldQuaternion(worldQuaternion);
+
+            // Retirer du groupe et ajouter à la scène
+            helixGroup.remove(child);
+            scene.add(child);
+
+            // Restaurer la position et rotation mondiales
+            child.position.copy(worldPosition);
+            child.quaternion.copy(worldQuaternion);
+          });
+        }
+
         for (let i = 0; i < objects.length; i++) {
           const object = objects[i];
           const target = targets[i];
@@ -609,6 +666,23 @@ const HeroSection = () => {
             object.rotation.z =
               startRot.z + (target.rotation.z - startRot.z) * easing;
 
+            // Si nous passons à la vue hélice et que l'animation est terminée
+            if (view === "helix" && progress === 1) {
+              // Stocker la position et rotation mondiales
+              const worldPosition = new THREE.Vector3();
+              const worldQuaternion = new THREE.Quaternion();
+              object.getWorldPosition(worldPosition);
+              object.getWorldQuaternion(worldQuaternion);
+
+              // Retirer de la scène et ajouter au groupe
+              scene.remove(object);
+              helixGroup.add(object);
+
+              // Restaurer la position et rotation mondiales
+              object.position.copy(worldPosition);
+              object.quaternion.copy(worldQuaternion);
+            }
+
             // Rendre la scène
             render();
 
@@ -634,7 +708,14 @@ const HeroSection = () => {
 
       function animate() {
         requestAnimationFrame(animate);
+
+        // Faire tourner lentement le groupe de l'hélice sur lui-même si nous sommes en vue hélice
+        if (currentView === "helix" && helixGroupRef.current) {
+          helixGroupRef.current.rotation.y += 0.0001; // Vitesse de rotation
+        }
+
         controls.update();
+        render();
       }
 
       function render() {
@@ -648,16 +729,16 @@ const HeroSection = () => {
       window.handleViewChange = (view) => {
         switch (view) {
           case "table":
-            transform(targets.table, 2000);
+            transform(targets.table, 2000, "table");
             break;
           case "sphere":
-            transform(targets.sphere, 2000);
+            transform(targets.sphere, 2000, "sphere");
             break;
           case "helix":
-            transform(targets.helix, 2000);
+            transform(targets.helix, 2000, "helix");
             break;
           case "grid":
-            transform(targets.grid, 2000);
+            transform(targets.grid, 2000, "grid");
             break;
         }
       };

@@ -40,12 +40,6 @@ const Header = () => {
           <div className=" md:flex items-center gap-8">
             <div className="hidden md:flex items-center gap-8">
               <Link
-                href="/plugins"
-                className="text-gray-300 hover:text-white font-calibre-medium text-2xl hover:scale-105 transition-all"
-              >
-                Plugins
-              </Link>
-              <Link
                 href="https://docs.starkagent.ai"
                 target="_blank"
                 className="text-gray-300 hover:text-white font-calibre-medium text-2xl hover:scale-105 transition-all"
@@ -60,12 +54,6 @@ const Header = () => {
               >
                 GitHub
               </a>
-              <Link
-                href="/create-agent"
-                className="bg-white text-black px-4 py-2 rounded-lg font-calibre-medium text-xl hover:bg-gray-200 transition-all"
-              >
-                Create Agent
-              </Link>
             </div>
           </div>
 
@@ -83,12 +71,6 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden absolute top-20 left-0 right-0 bg-black/100 backdrop-blur-sm border-b border-neutral-800 py-4 px-6 space-y-4">
             <Link
-              href="/plugins"
-              className="block text-gray-300 hover:text-white font-calibre-medium text-lg hover:bg-black py-2 px-4 rounded-lg transition-all"
-            >
-              Plugins
-            </Link>
-            <Link
               href="https://docs.starkagent.ai"
               className="block text-gray-300 hover:text-white font-calibre-medium text-lg hover:bg-black py-2 px-4 rounded-lg transition-all"
             >
@@ -102,12 +84,6 @@ const Header = () => {
             >
               GitHub
             </a>
-            <Link
-              href="/create-agent"
-              className="block bg-white text-black px-4 py-2 rounded-lg font-calibre-medium text-lg hover:bg-gray-200 transition-all max-w-[200px]"
-            >
-              Create Agent
-            </Link>
           </div>
         )}
       </nav>
